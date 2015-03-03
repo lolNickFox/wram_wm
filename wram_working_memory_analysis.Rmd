@@ -5,18 +5,35 @@ date: "Tuesday, March 03, 2015"
 output: html_document
 ---
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+This is the first pass at analyzing the wRAM working memory protocol in R.
 
 ```{r}
-summary(cars)
+
+library(dplyr)
+library(ggplot2)
+library(broom)
+
+help(read.csv)
+
+
+
+setwd("C:/Users/Nick/Documents/GitHub/wram_working_memory")
+
+wram_raw <- read.csv("wram_wm_raw.csv", header = TRUE, sep = ",")
+
+wram_raw <- tbl_df(wram_raw)
+
+wram_cleaned <- na.omit(wram_raw)
+
+wram_averages <- wram_cleaned %>%
+  dplyr::group_by(Day, Treatment, Trial) %>%
+  dplyr::mutate(avr_RM_error = mean(RM_error), avr_WMC_error = mean(WMC_error)) %>%
+  distinct(avr_RM_error, avr_WMC_error)
+
+wram_averages %>%
+  ggplot(aes(x = Trial, y = avr_WMC_error, group = Treatment, colour = Treatment)) + geom_point(alpha = 0.5, size = 2) + geom_line(size = 1) + facet_grid(. ~ Day) + theme_bw()
+  
 ```
 
-You can also embed plots, for example:
 
-```{r, echo=FALSE}
-plot(cars)
-```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
