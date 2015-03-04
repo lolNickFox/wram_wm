@@ -50,12 +50,17 @@ wram_averages_treatment <- wram_averages %>%
 
 wram_averages_treatment %>%
   ggplot(aes(x = Day, y = treatment_WMC, group = Treatment, colour = Treatment)) + geom_point(size = 4) + geom_line(size = 1, alpha = 0.8) + theme_bw() + scale_x_continuous(breaks = seq(2, 12, 1)) + ylab("Working Memory Correct Errors")
-#graph of working memory correct errors over day, averaged by treatment.
+
+aov.out.WMC <- aov(treatment_WMC ~ Treatment * Day + Error(Animal), data = wram_averages_treatment)
+summary(aov.out.WMC)
+
 
 wram_averages_treatment %>%
   ggplot(aes(x = Day, y = treatment_RM, group = Treatment, colour = Treatment)) + geom_point(size = 4) + geom_line(size = 1, alpha = 0.8) + theme_bw() + scale_x_continuous(breaks = seq(2, 12, 1)) + ylab("Reference Memory Errors")
 #graph of reference memory errors over day, averaged by treatment.
 
+aov.out.RM <- aov(treatment_RM ~ Treatment * Day + Error(Animal), data = wram_averages_treatment)
+summary(aov.out.RM)
 ```
 
 
