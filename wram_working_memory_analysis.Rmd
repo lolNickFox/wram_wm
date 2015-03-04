@@ -13,8 +13,6 @@ library(dplyr)
 library(ggplot2)
 library(broom)
 
-help(read.csv)
-
 
 
 setwd("C:/Users/Nick/Documents/GitHub/wram_working_memory")
@@ -29,10 +27,35 @@ wram_averages <- wram_cleaned %>%
   dplyr::group_by(Day, Treatment, Trial) %>%
   dplyr::mutate(avr_RM_error = mean(RM_error), avr_WMC_error = mean(WMC_error)) %>%
   distinct(avr_RM_error, avr_WMC_error)
+#generates average number of RM and WMC errors per trial per treatment
 
 wram_averages %>%
-  ggplot(aes(x = Trial, y = avr_WMC_error, group = Treatment, colour = Treatment)) + geom_point(alpha = 0.5, size = 2) + geom_line(size = 1) + facet_grid(. ~ Day) + theme_bw()
-  
+  filter(Trial != 1) %>%
+  ggplot(aes(x = Trial, y = avr_WMC_error, group = Treatment, colour = Treatment)) + geom_point(size = 4) + geom_line(size = 1, alpha = 0.8) + facet_grid(. ~ Day) + theme_bw() + scale_x_continuous(breaks = seq(2, 4, 1)) + ylab("Working Memory Correct Errors")
+#graph of working memory correct errors over trials, faceted by day.
+
+wram_averages %>%
+  filter(Trial != 1) %>%
+  ggplot(aes(x = Trial, y = avr_RM_error, group = Treatment, colour = Treatment)) + geom_point(size = 4) + geom_line(size = 1, alpha = 0.8) + facet_grid(. ~ Day) + theme_bw() + scale_x_continuous(breaks = seq(2, 4, 1)) + ylab("Reference Memory Errors")
+#graph of reference memory errors over trials, faceted by day.
+
+
+
+wram_averages_treatment <- wram_averages %>%
+  filter(Day != 1) %>%
+  dplyr::group_by(Day, Treatment) %>%
+  dplyr::mutate(treatment_RM = mean(avr_RM_error), treatment_WMC = mean(avr_WMC_error)) %>%
+  distinct(treatment_RM, treatment_WMC)
+#creates the data frame to make the following graph (for average number of errors per treatment per day).
+
+wram_averages_treatment %>%
+  ggplot(aes(x = Day, y = treatment_WMC, group = Treatment, colour = Treatment)) + geom_point(size = 4) + geom_line(size = 1, alpha = 0.8) + theme_bw() + scale_x_continuous(breaks = seq(2, 12, 1)) + ylab("Working Memory Correct Errors")
+#graph of working memory correct errors over day, averaged by treatment.
+
+wram_averages_treatment %>%
+  ggplot(aes(x = Day, y = treatment_RM, group = Treatment, colour = Treatment)) + geom_point(size = 4) + geom_line(size = 1, alpha = 0.8) + theme_bw() + scale_x_continuous(breaks = seq(2, 12, 1)) + ylab("Reference Memory Errors")
+#graph of reference memory errors over day, averaged by treatment.
+
 ```
 
 
