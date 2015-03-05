@@ -1,11 +1,85 @@
 ---
 title: Understanding the Role of T cell Activity in Generating the Neurodevelopmental
   Consequences Associated with Maternal Infection
-subtitle: "A Four Month Update"
 author: "Nick Fox"
 date: "Tuesday, March 03, 2015"
 output: word_document
+subtitle: A Four Month Update
 ---
+```{r echo = FALSE}
+
+library(dplyr)
+library(ggplot2)
+library(broom)
+
+
+se <- function(x) sqrt(var(x)/length(x))
+#adds a function to make standard error calculations (for error bars)
+
+setwd("C:/Users/Nick/Documents/GitHub/wram_working_memory")
+
+wram_raw <- read.csv("wram_wm_raw.csv", header = TRUE, sep = ",")
+
+wram_raw <- tbl_df(wram_raw)
+
+wram_cleaned <- na.omit(wram_raw)
+
+wram_averages <- wram_cleaned %>%
+  dplyr::group_by(Day, Treatment, Trial) %>%
+  dplyr::mutate(avr_RM_error = mean(RM_error), avr_WMC_error = mean(WMC_error))
+  distinct(avr_RM_error, avr_WMC_error)
+#generates average number of RM and WMC errors per trial per treatment
+
+wram_averages_animal <- wram_averages %>%
+  dplyr::group_by(Day, Animal) %>%
+  dplyr::mutate(avr_RM_animal = mean(RM_error), avr_WMC_animal = mean(WMC_error)) %>%
+  distinct(avr_RM_animal, avr_WMC_animal)
+
+
+wram_averages_treatment <- wram_averages %>%
+  filter(Day != 1) %>%
+  dplyr::group_by(Day, Treatment) %>%
+  dplyr::mutate(treatment_RM = mean(avr_RM_error), treatment_WMC = mean(avr_WMC_error)) %>%
+  distinct(treatment_RM, treatment_WMC)
+#creates the data frame to make the following graph (for average number of errors per treatment per day).
+
+setwd("C:/Users/Nick/Documents/GitHub/single_platform_wram")
+
+wram_raw <- read.csv("one_platform_wram_raw.csv", header = TRUE)
+
+wram_raw_male <- wram_raw %>%
+  filter(Sex != "Female")
+#makes male only dataframe
+
+wram_raw_female <- wram_raw %>%
+  filter(Sex != "Male")
+#makes female only dataframe
+
+wram_raw_female2 <- wram_raw_female %>%
+  dplyr::group_by(Day, Animal) %>%
+  dplyr::mutate(avr.latency = mean(Duration), avr.distance = mean(Distance)) %>%
+  distinct(avr.latency, avr.distance)
+#create a new data frame with average latency and average distance travelled per female per day (averaged trials)
+
+wram_raw_male2 <- wram_raw_male %>%
+  dplyr::group_by(Day, Animal) %>%
+  dplyr::mutate(avr.latency = mean(Duration), avr.distance = mean(Distance)) %>%
+  distinct(avr.latency, avr.distance)
+#create a new data frame with average latency and average distance travelled per male per day (averaged trials)
+
+wram_raw_female3 <- wram_raw_female2 %>%
+  dplyr::group_by(Day, Treatment) %>%
+  dplyr::mutate(mean.treatment.latency = mean(avr.latency), sd.treatment.latency = sd(avr.latency), sem.treatment.latency = se(avr.latency), mean.treatment.distance = mean(avr.distance), sd.treatment.distance = sd(avr.distance), sem.treatment.distance = se(avr.distance))
+#made a new dataframe with mean, std, and SEM calculated by animal x day and by treatment x day
+##avr.latency and avr.distance are animal by day. ##mean.latency and mean.distance are treatment
+
+wram_raw_male3 <- wram_raw_male2 %>%
+  dplyr::group_by(Day, Treatment) %>%
+  dplyr::mutate(mean.treatment.latency = mean(avr.latency), sd.treatment.latency = sd(avr.latency), sem.treatment.latency = se(avr.latency), mean.treatment.distance = mean(avr.distance), sd.treatment.distance = sd(avr.distance), sem.treatment.distance = se(avr.distance))
+#made a new dataframe with mean, std, and SEM calculated by animal x day and by treatment x day
+##avr.latency and avr.distance are animal by day. ##mean.latency and mean.distance are treatment
+
+```
 # **Summary**
 The following is a 4-month update on my Masters project.  As of March 5th, 2014, I have completed Aim 1 of my proposal and am preparing to start Aim 2.
 
@@ -49,7 +123,91 @@ A behavioral model of prepulse inhibition designed for mice was utilized.  Each 
 
 For "pulse alone" trials (S), only 40ms of the 120db white noise was provided.  Inflection from this trial served as a positive control for startle.  "Prepulse alone" trials (p) only consisted of 40ms of one of the three prepulse conditions and served as a negative control (prepulse tones should not be inherently startling, and we saw that they were not).  Test trials (PPI-S) had both prepulse and pulse, separated by an inter-pulse interval of 100ms.  Animals were exposed to 30 PPI-S trials, 15 S trials, and 15 p trials, randomly ordered.  Each session began and ended with five S trials. <br> <br>
 
-Percent scores for amount prepulse inhibition were calculated as $%PPI = 100 * (S - PPI-S) / S$.  Scores closer to 0% were considered evidence of less prepulse inhibition.
+Percent scores for amount prepulse inhibition were calculated as %PPI = 100 * (S - PPI-S) / S.  Scores closer to 0% were considered evidence of less prepulse inhibition.
+
+#### **Results**
+
+##### Four Platform Working Memory
+The learning curve, measured by WMC errors is shown in Figure 1, and the learning curve measured by RM errors is shown in Figure 2.
+
+```{r echo = FALSE}
+
+wram_averages_treatment %>%
+  ggplot(aes(x = Day, y = treatment_WMC, group = Treatment, linetype = Treatment, shape = Treatment)) + geom_point(size = 3) + geom_line(size = 1, alpha = 0.8) + theme_bw() + scale_x_continuous(breaks = seq(2, 12, 1)) + ylab("Working Memory Correct Errors") + ggtitle("Figure 1. Learning curve of Working Memory Correct\nerrors over Day") + theme (plot.title = element_text(size = 16, face = "bold"))
+#FIGURE1
+```
+
+```{r echo = FALSE}
+
+wram_averages_treatment %>%
+  ggplot(aes(x = Day, y = treatment_RM, group = Treatment, linetype = Treatment, shape = Treatment)) + geom_point(size = 3) + geom_line(size = 1, alpha = 0.8) + theme_bw() + scale_x_continuous(breaks = seq(2, 12, 1)) + ylab("Reference Memory Errors") + ggtitle("Figure 2. Learning curve of Reference Memory\nerrors over Day") + theme (plot.title = element_text(size = 16, face = "bold"))
+#FIGURE2
+```
+One-between (treatment) and one-within (Day) repeated measures ANOVAs revealed a main effect of Treatment for Working Memory Correct errors (F(1, 257) = 5057, p < 0.05), but not for Reference Memory errors (F(1, 257) = 0.98, p > 0.05).  We found a significant main effect of Day for Reference Memory errors (F(1, 257) = 16.36, P < 0.001), but not for Working Memory Correct errors (F(1, 257) = 0.06, p > 0.05).  We did not detect an interaction between Treatment and Day in our collected data.
+
+```{r echo = FALSE}
+aov.out.WMC <- aov(avr_WMC_animal ~ Treatment * Day + Error(Animal), data = wram_averages_animal)
+#summary(aov.out.WMC) #for figure 1
+```
+
+```{r echo = FALSE}
+
+aov.out.RM <- aov(avr_RM_animal ~ Treatment * Day + Error(Animal), data = wram_averages_animal)
+#summary(aov.out.RM) #for figure 2
+```
+
+To further investigate the learning curves, we analyzed the data trial-by-trial.  Figure 3 shows the mean number of WMC errors by trial across days, and figure 4 shows the mean number of RM errors.
+
+```{r echo = FALSE}
+wram_averages %>%
+  filter(Trial != 1) %>%
+  ggplot(aes(x = Trial, y = avr_WMC_error, group = Treatment, linetype = Treatment, shape = Treatment)) + geom_point(size = 3) + geom_line(size = 1, alpha = 0.8) + facet_grid(. ~ Day) + theme_bw() + scale_x_continuous(breaks = seq(2, 4, 1), limits = c(1.5, 4.5)) + ylab("Working Memory Correct Errors") + ggtitle("Figure 3. Number of Working Memory Correct\nerrors accross trials per day") + theme (plot.title = element_text(size = 16, face = "bold"))
+#graph of working memory correct errors over trials, faceted by day. #FIGURE3
+
+```
+
+```{r echo = FALSE}
+wram_averages %>%
+  filter(Trial != 1) %>%
+  ggplot(aes(x = Trial, y = avr_RM_error, group = Treatment, linetype = Treatment, shape = Treatment)) + geom_point(size = 3) + geom_line(size = 1, alpha = 0.8) + facet_grid(. ~ Day) + theme_bw() + scale_x_continuous(breaks = seq(2, 4, 1), limits = c(1.5, 4.5)) + ylab("Reference Memory Errors") + ggtitle("Figure 4. Number of Reference Memory\nerrors accross trials per day") + theme (plot.title = element_text(size = 16, face = "bold"))
+#graph of reference memory errors over trials, faceted by day. #FIGURE4
+```
+Animals make significantly more WMC errors (F(1, 92) = 265.78, p < 0.001) and RM errors (F(1, 92) = 121.51, p < 0.001) on trial 4 of a test day.
+
+```{r echo = FALSE}
+aov.out.WMC.trial <- aov(avr_WMC_error ~ Treatment * Trial + Error(Animal), data = wram_averages)
+#summary(aov.out.WMC.trial) #for figure 3
+```
+
+```{r echo = FALSE}
+aov.out.RM.trial <- aov(avr_RM_error ~ Treatment * Trial + Error(Animal), data = wram_averages)
+#summary(aov.out.RM.trial) #for figure 4
+```
+
+
+
+##### Single Platform Spatial Navigation
+To investigate if our animals from treated mothers were able to learn to spatially navigate the wRAM using extramaze cues, we tested a 33 animals (22 males, 11 females) in the single platform water radial arm maze. Males and females were run in two separate experiments and are reported separately. <br> <br>
+
+**Males**
+The average distance travelled before finding the escape platform is shown in Figure 5.
+
+```{r echo = FALSE}
+wram_raw_female3 %>%
+  group_by(Day, Treatment) %>%
+  ggplot(aes(x = Day, y = mean.treatment.distance, group = Treatment, linetype = Treatment, shape = Treatment)) + ylab("Average distance traveled (m)")+ geom_point(size = 3) + geom_line(size = 1, alpha = 0.8) + theme_bw() + ggtitle("Figure 5. Average distance traveled by males\nbefore finding escape platform by day") + theme (plot.title = element_text(size = 16, face = "bold"))
+#graph the average distance by treatment #FIGURE5
+
+aov.out.M.avrdistance <- aov(avr.distance ~ Treatment * Day + Error(Animal), data = wram_raw_male2)
+#summary(aov.out.M.avrdistance) #analysis for FIGURE5
+```
+
+We found a main effect of day
+
+
+
+
+
 
 
 
@@ -59,10 +217,8 @@ This is the first pass at analyzing the wRAM working memory protocol in R.
 Things to do: <br>
 Methods: <br>
 3) Chronic Stress <br>
-4) Single Platform wRAM <br>
 6) Elevated Plus Maze <br>
 7) Open Field / Novel Object <br>
-8) Pre-Pulse Inhibition <br> <br>
 
 Results: <br>
 - working memory 4 platform wRAM <br>
@@ -72,113 +228,13 @@ Results: <br>
 <br> <br>
 Future plans
 
-```{r echo = FALSE}
-
-library(dplyr)
-library(ggplot2)
-library(broom)
 
 
 
-setwd("C:/Users/Nick/Documents/GitHub/wram_working_memory")
-
-wram_raw <- read.csv("wram_wm_raw.csv", header = TRUE, sep = ",")
-
-wram_raw <- tbl_df(wram_raw)
-
-wram_cleaned <- na.omit(wram_raw)
-
-wram_averages <- wram_cleaned %>%
-  dplyr::group_by(Day, Treatment, Trial) %>%
-  dplyr::mutate(avr_RM_error = mean(RM_error), avr_WMC_error = mean(WMC_error)) %>%
-  distinct(avr_RM_error, avr_WMC_error)
-#generates average number of RM and WMC errors per trial per treatment
-```
-
-```{r echo = FALSE}
-wram_averages %>%
-  filter(Trial != 1) %>%
-  ggplot(aes(x = Trial, y = avr_WMC_error, group = Treatment, linetype = Treatment, shape = Treatment)) + geom_point(size = 3) + geom_line(size = 1, alpha = 0.8) + facet_grid(. ~ Day) + theme_bw() + scale_x_continuous(breaks = seq(2, 4, 1), limits = c(1.5, 4.5)) + ylab("Working Memory Correct Errors")
-#graph of working memory correct errors over trials, faceted by day.
-```
-
-```{r echo = FALSE}
-wram_averages %>%
-  filter(Trial != 1) %>%
-  ggplot(aes(x = Trial, y = avr_RM_error, group = Treatment, linetype = Treatment, shape = Treatment)) + geom_point(size = 3) + geom_line(size = 1, alpha = 0.8) + facet_grid(. ~ Day) + theme_bw() + scale_x_continuous(breaks = seq(2, 4, 1), limits = c(1.5, 4.5)) + ylab("Reference Memory Errors")
-#graph of reference memory errors over trials, faceted by day.
-```
 
 
-```{r echo = FALSE}
-
-wram_averages_treatment <- wram_averages %>%
-  filter(Day != 1) %>%
-  dplyr::group_by(Day, Treatment) %>%
-  dplyr::mutate(treatment_RM = mean(avr_RM_error), treatment_WMC = mean(avr_WMC_error)) %>%
-  distinct(treatment_RM, treatment_WMC)
-#creates the data frame to make the following graph (for average number of errors per treatment per day).
-
-wram_averages_treatment %>%
-  ggplot(aes(x = Day, y = treatment_WMC, group = Treatment, linetype = Treatment, shape = Treatment)) + geom_point(size = 3) + geom_line(size = 1, alpha = 0.8) + theme_bw() + scale_x_continuous(breaks = seq(2, 12, 1)) + ylab("Working Memory Correct Errors")
-
-aov.out.WMC <- aov(treatment_WMC ~ Treatment * Day + Error(Animal), data = wram_averages_treatment)
-summary(aov.out.WMC)
-
-```
 
 
-```{r echo = FALSE}
-
-wram_averages_treatment %>%
-  ggplot(aes(x = Day, y = treatment_RM, group = Treatment, linetype = Treatment, shape = Treatment)) + geom_point(size = 3) + geom_line(size = 1, alpha = 0.8) + theme_bw() + scale_x_continuous(breaks = seq(2, 12, 1)) + ylab("Reference Memory Errors")
-#graph of reference memory errors over day, averaged by treatment.
-
-aov.out.RM <- aov(treatment_RM ~ Treatment * Day + Error(Animal), data = wram_averages_treatment)
-summary(aov.out.RM)
-```
-
-
-```{r echo = FALSE}
-setwd("C:/Users/Nick/Documents/GitHub/single_platform_wram")
-wram_raw <- read.csv("one_platform_wram_raw.csv", header = TRUE)
-
-se <- function(x) sqrt(var(x)/length(x))
-#adds a function to make standard error calculations (for error bars)
-
-wram_raw_male <- wram_raw %>%
-  filter(Sex != "Female")
-#makes male only dataframe
-
-wram_raw_female <- wram_raw %>%
-  filter(Sex != "Male")
-#makes female only dataframe
-
-wram_raw_female2 <- wram_raw_female %>%
-  dplyr::group_by(Day, Animal) %>%
-  dplyr::mutate(avr.latency = mean(Duration), avr.distance = mean(Distance)) %>%
-  distinct(avr.latency, avr.distance)
-#create a new data frame with average latency and average distance travelled per female per day (averaged trials)
-
-wram_raw_male2 <- wram_raw_male %>%
-  dplyr::group_by(Day, Animal) %>%
-  dplyr::mutate(avr.latency = mean(Duration), avr.distance = mean(Distance)) %>%
-  distinct(avr.latency, avr.distance)
-#create a new data frame with average latency and average distance travelled per male per day (averaged trials)
-
-wram_raw_female3 <- wram_raw_female2 %>%
-  dplyr::group_by(Day, Treatment) %>%
-  dplyr::mutate(mean.treatment.latency = mean(avr.latency), sd.treatment.latency = sd(avr.latency), sem.treatment.latency = se(avr.latency), mean.treatment.distance = mean(avr.distance), sd.treatment.distance = sd(avr.distance), sem.treatment.distance = se(avr.distance))
-#made a new dataframe with mean, std, and SEM calculated by animal x day and by treatment x day
-##avr.latency and avr.distance are animal by day. ##mean.latency and mean.distance are treatment
-
-wram_raw_male3 <- wram_raw_male2 %>%
-  dplyr::group_by(Day, Treatment) %>%
-  dplyr::mutate(mean.treatment.latency = mean(avr.latency), sd.treatment.latency = sd(avr.latency), sem.treatment.latency = se(avr.latency), mean.treatment.distance = mean(avr.distance), sd.treatment.distance = sd(avr.distance), sem.treatment.distance = se(avr.distance))
-#made a new dataframe with mean, std, and SEM calculated by animal x day and by treatment x day
-##avr.latency and avr.distance are animal by day. ##mean.latency and mean.distance are treatment
-
-```
 
 
 This next set of analyses comes from averaging the data by treatment per day.  Each treatment (SEA or Saline) has 1 point per day.  That point is the average of all of the measures made for the animals of that treatment that day.
@@ -187,10 +243,7 @@ This next set of analyses comes from averaging the data by treatment per day.  E
 
 ```{r echo = FALSE}
 
-wram_raw_female3 %>%
-  group_by(Day, Treatment) %>%
-  ggplot(aes(x = Day, y = mean.treatment.distance, group = Treatment, linetype = Treatment, shape = Treatment)) + ylab("Average distance travelled (m)")+ geom_point(size = 3) + geom_line(size = 1, alpha = 0.8) + theme_bw()
-#graph the average distance by treatment
+
 
 aov.out.F.avrdistance <- aov(avr.distance ~ Treatment * Day + Error(Animal), data = wram_raw_female2)
 summary(aov.out.F.avrdistance)
