@@ -3,7 +3,7 @@ title: Understanding the Role of T cell Activity in Generating the Neurodevelopm
   Consequences Associated with Maternal Infection
 author: "Nick Fox"
 date: "Tuesday, March 03, 2015"
-output: word_document
+output: html_document
 subtitle: A Four Month Update
 ---
 ```{r echo = FALSE}
@@ -26,7 +26,7 @@ wram_cleaned <- na.omit(wram_raw)
 
 wram_averages <- wram_cleaned %>%
   dplyr::group_by(Day, Treatment, Trial) %>%
-  dplyr::mutate(avr_RM_error = mean(RM_error), avr_WMC_error = mean(WMC_error))
+  dplyr::mutate(avr_RM_error = mean(RM_error), avr_WMC_error = mean(WMC_error)) %>%
   distinct(avr_RM_error, avr_WMC_error)
 #generates average number of RM and WMC errors per trial per treatment
 
@@ -88,7 +88,7 @@ The following is a 4-month update on my Masters project.  As of March 5th, 2014,
 Assess the effect the effect of T cell-specific maternal immune activation on the generation of schizophrenic-associated behavioral deficits in adult progeny.
 
 
-#### **Methods**
+### **Methods**
 
 #### Animals
   Experiments for Aim 1 were conducted using C57BL/6 mice bred in our vivarium (Psychology Building, Busch Campus, Rutgers University New Jersey).  Animals were housed 3-4 per cage with siblings of the same sex under a 12:12h light:dark cycle (lights on at 5:30a).  Food and water was available ad libitum.  All experiments were conducted in accordance with the Guide for the Care and Use of Laboratory Animals as adopted by the National Institutes of Health, and approved by the Rutgers Institutional Animal Care and Use Committee.
@@ -143,7 +143,13 @@ wram_averages_treatment %>%
   ggplot(aes(x = Day, y = treatment_RM, group = Treatment, linetype = Treatment, shape = Treatment)) + geom_point(size = 3) + geom_line(size = 1, alpha = 0.8) + theme_bw() + scale_x_continuous(breaks = seq(2, 12, 1)) + ylab("Reference Memory Errors") + ggtitle("Figure 2. Learning curve of Reference Memory\nerrors over Day") + theme (plot.title = element_text(size = 16, face = "bold"))
 #FIGURE2
 ```
+
+
+
 One-between (treatment) and one-within (Day) repeated measures ANOVAs revealed a main effect of Treatment for Working Memory Correct errors (F(1, 257) = 5057, p < 0.05), but not for Reference Memory errors (F(1, 257) = 0.98, p > 0.05).  We found a significant main effect of Day for Reference Memory errors (F(1, 257) = 16.36, P < 0.001), but not for Working Memory Correct errors (F(1, 257) = 0.06, p > 0.05).  We did not detect an interaction between Treatment and Day in our collected data.
+
+
+
 
 ```{r echo = FALSE}
 aov.out.WMC <- aov(avr_WMC_animal ~ Treatment * Day + Error(Animal), data = wram_averages_animal)
@@ -156,7 +162,11 @@ aov.out.RM <- aov(avr_RM_animal ~ Treatment * Day + Error(Animal), data = wram_a
 #summary(aov.out.RM) #for figure 2
 ```
 
+
+
 To further investigate the learning curves, we analyzed the data trial-by-trial.  Figure 3 shows the mean number of WMC errors by trial across days, and figure 4 shows the mean number of RM errors.
+
+
 
 ```{r echo = FALSE}
 wram_averages %>%
@@ -166,12 +176,17 @@ wram_averages %>%
 
 ```
 
+
+
 ```{r echo = FALSE}
 wram_averages %>%
   filter(Trial != 1) %>%
   ggplot(aes(x = Trial, y = avr_RM_error, group = Treatment, linetype = Treatment, shape = Treatment)) + geom_point(size = 3) + geom_line(size = 1, alpha = 0.8) + facet_grid(. ~ Day) + theme_bw() + scale_x_continuous(breaks = seq(2, 4, 1), limits = c(1.5, 4.5)) + ylab("Reference Memory Errors") + ggtitle("Figure 4. Number of Reference Memory\nerrors accross trials per day") + theme (plot.title = element_text(size = 16, face = "bold"))
 #graph of reference memory errors over trials, faceted by day. #FIGURE4
 ```
+
+
+
 Animals make significantly more WMC errors (F(1, 92) = 265.78, p < 0.001) and RM errors (F(1, 92) = 121.51, p < 0.001) on trial 4 of a test day.
 
 ```{r echo = FALSE}
@@ -189,21 +204,107 @@ aov.out.RM.trial <- aov(avr_RM_error ~ Treatment * Trial + Error(Animal), data =
 ##### Single Platform Spatial Navigation
 To investigate if our animals from treated mothers were able to learn to spatially navigate the wRAM using extramaze cues, we tested a 33 animals (22 males, 11 females) in the single platform water radial arm maze. Males and females were run in two separate experiments and are reported separately. <br> <br>
 
-**Males**
-The average distance travelled before finding the escape platform is shown in Figure 5.
+**Males**. <br>
+The average distance traveled by males before finding the escape platform is shown in Figure 5.
+
+
 
 ```{r echo = FALSE}
-wram_raw_female3 %>%
-  group_by(Day, Treatment) %>%
-  ggplot(aes(x = Day, y = mean.treatment.distance, group = Treatment, linetype = Treatment, shape = Treatment)) + ylab("Average distance traveled (m)")+ geom_point(size = 3) + geom_line(size = 1, alpha = 0.8) + theme_bw() + ggtitle("Figure 5. Average distance traveled by males\nbefore finding escape platform by day") + theme (plot.title = element_text(size = 16, face = "bold"))
-#graph the average distance by treatment #FIGURE5
+wram_raw_male3 %>%
+    group_by(Day, Treatment) %>%
+    ggplot(aes(x = Day, y = mean.treatment.distance, group = Treatment, linetype = Treatment, shape = Treatment)) + ylab("Average distance travelled (m)")+ geom_point(size = 3) + geom_line(size = 1, alpha = 0.8) + theme_bw() + ggtitle("Figure 5. Average distance traveled by females\nbefore finding escape platform by day") + theme (plot.title = element_text(size = 16, face = "bold"))
+#graph the average distance by treatment
 
 aov.out.M.avrdistance <- aov(avr.distance ~ Treatment * Day + Error(Animal), data = wram_raw_male2)
 #summary(aov.out.M.avrdistance) #analysis for FIGURE5
 ```
 
-We found a main effect of day
 
+
+We found a main effect of Day (F(1, 149) = 70.32, p < 0.001), but not for Treatment (F(1, 149) = 2.09, p > 0.05) on the distance traveled before finding the escape platform.  
+
+
+
+The average latency for males to find the escape platform is shown in Figure 6.
+
+
+
+```{r echo = FALSE}
+wram_raw_male3 %>%
+  group_by(Day, Treatment) %>%
+  ggplot(aes(x = Day, y = mean.treatment.latency, group = Treatment, linetype = Treatment, shape = Treatment)) + ylab("Average latency to find platform (s)") + geom_point(size = 3) + geom_line(size = 1, alpha = 0.8) + theme_bw() + ggtitle("Figure 6. Average latency by males\nto find the escape platform by day") + theme (plot.title = element_text(size = 16, face = "bold"))
+#graph the average latency by treatment
+
+aov.out.M.avrlatency <- aov(avr.latency ~ Treatment * Day + Error(Animal), data = wram_raw_male2)
+#summary(aov.out.M.avrlatency)
+```
+
+
+
+We found a main effect of Day (F(1, 149) = 12.32, p < 0.001), but not for Treatment (F(1, 149) = 1.49, p > 0.05) on the latency to find the escape platform.
+
+**Females**. <br>
+The average distance traveled by females before finding the escape platform is shown in Figure 7.
+
+```{r echo = FALSE}
+wram_raw_female3 %>%
+  group_by(Day, Treatment) %>%
+  ggplot(aes(x = Day, y = mean.treatment.distance, group = Treatment, linetype = Treatment, shape = Treatment)) + ylab("Average distance traveled (m)")+ geom_point(size = 3) + geom_line(size = 1, alpha = 0.8) + theme_bw() + ggtitle("Figure 7. Average distance traveled by females\nbefore finding escape platform by day") + theme (plot.title = element_text(size = 16, face = "bold"))
+#graph the average distance by treatment #FIGURE7
+
+aov.out.F.avrdistance <- aov(avr.distance ~ Treatment * Day + Error(Animal), data = wram_raw_female2)
+#summary(aov.out.F.avrdistance)
+#repeated measures anova for distance (females) using average distance by treatment
+```
+
+
+
+We found a main effect of Day (F(1, 83) = 7.37, p < 0.01), and a marginally significant main effect of Treatment (F(1, 83) = 3.69, p = 0.058) on the distance traveled before finding the escape platform.
+
+
+The average latency for females to find the escape platform is shown in Figure 8.
+
+```{r echo = FALSE}
+
+wram_raw_female3 %>%
+  group_by(Day, Treatment) %>%
+  ggplot(aes(x = Day, y = mean.treatment.latency, group = Treatment, linetype = Treatment, shape = Treatment)) + ylab("Average latency to find platform (s)") + geom_point(size = 3) + geom_line(size = 1, alpha = 0.8) + theme_bw() + ggtitle("Figure 8. Average latency by females\nto find the escape platform by day") + theme (plot.title = element_text(size = 16, face = "bold"))
+#graph the average latency by treatment
+
+aov.out.F.avrlatency <- aov(avr.latency ~ Treatment * Day + Error(Animal), data = wram_raw_female2)
+#summary(aov.out.F.avrlatency)
+#repeated measures anova for duration (females) using average latency by treatment
+```
+
+We found a main effect of Day (F(1, 83) = 12.76, p < 0.001), and a main effect of Treatment (F(1, 83) = 6.5, P < 0.05) on the latency to find the escape platform.
+
+#### Aim 1 Conclusions
+After performing the 4wRAM, we decided that we had taken a few two many steps at once.  Instead of testing spatial learning and working memory and reference memory, we decided to roll back to a more simple design.  From that, we found that female offspring from mothers treated with SEA performed significantly differently at at the 1wRAM compared to offspring from saline treated mothers, measured both by how long it took them and how far they traveled before finding the escape platform.
+
+
+In collecting data for Aim 2, we will specifically test for differences between male and female offspring to confirm this initial analysis from Aim 1.
+
+------
+------
+
+## Research Aim 2
+Assess the ability of T cell-specific maternal immune activation to sensitize progeny to repeated psychological stress in adolescence.
+
+### Additional Methods
+Methods of animal care, breeding, and SEA administration will remain as stated under Research Aim 1.  Additional methods unique to Research Aim 2 follow below.
+
+#### Chronic Psychological Stress
+Psychological stress will be administered starting postnatal day 28 (PN28), or one week after weaning.  Randomized stressors will be administered daily for fifteen weekdays.  Animals will not be stressed over weekends.  Stressors included are as follows:
+
+1. four hours of restraint
+2. two hours of exposure to foot shock chamber
+  + 10 foot shocks are administered at unpredictible intervals over the two hour period
+3. two hours of exposure to whote noise chamber
+  + 40 bursts of white noise at randomized frequency and duration are administered over the two hour period
+4. social disruption
+  + individual animals are introduced to a new cage with two long-term cagemates
+5. circadian cycle disruption
+  + individuals are singly housed in a bright room overnight, robbing them of a dark phase that day.
 
 
 
@@ -216,13 +317,10 @@ We found a main effect of day
 This is the first pass at analyzing the wRAM working memory protocol in R.
 Things to do: <br>
 Methods: <br>
-3) Chronic Stress <br>
 6) Elevated Plus Maze <br>
 7) Open Field / Novel Object <br>
 
 Results: <br>
-- working memory 4 platform wRAM <br>
-- spatial learning 1 platform wRAM <br>
 - low-grade chronic stress: body weight, EPM, OF, PPI <br>
 - severe chronic stress: body weight, EPM, OF, PPI <br>
 <br> <br>
@@ -230,63 +328,3 @@ Future plans
 
 
 
-
-
-
-
-
-
-
-This next set of analyses comes from averaging the data by treatment per day.  Each treatment (SEA or Saline) has 1 point per day.  That point is the average of all of the measures made for the animals of that treatment that day.
-
-#Females - Average Distance Traveled
-
-```{r echo = FALSE}
-
-
-
-aov.out.F.avrdistance <- aov(avr.distance ~ Treatment * Day + Error(Animal), data = wram_raw_female2)
-summary(aov.out.F.avrdistance)
-#repeated measures anova for distance (females) using average distance by treatment
-
-```
-#Females - Average latency to find platform
-
-```{r echo = FALSE}
-
-wram_raw_female3 %>%
-  group_by(Day, Treatment) %>%
-  ggplot(aes(x = Day, y = mean.treatment.latency, group = Treatment, linetype = Treatment, shape = Treatment)) + ylab("Average latency to find platform (s)") + geom_point(size = 3) + geom_line(size = 1, alpha = 0.8) + theme_bw()
-#graph the average latency by treatment
-
-aov.out.F.avrlatency <- aov(avr.latency ~ Treatment * Day + Error(Animal), data = wram_raw_female2)
-summary(aov.out.F.avrlatency)
-#repeated measures anova for duration (females) using average latency by treatment
-```
-
-#Males - Average Distance Traveled
-
-```{r echo = FALSE}
-
-wram_raw_male3 %>%
-    group_by(Day, Treatment) %>%
-    ggplot(aes(x = Day, y = mean.treatment.distance, group = Treatment, linetype = Treatment, shape = Treatment)) + ylab("Average distance travelled (m)")+ geom_point(size = 3) + geom_line(size = 1, alpha = 0.8) + theme_bw()
-#graph the average distance by treatment
-
-aov.out.M.avrdistance <- aov(avr.distance ~ Treatment * Day + Error(Animal), data = wram_raw_male2)
-summary(aov.out.M.avrdistance)
-#repeated measures anova for distance (females) using average distance by treatment
-```
-
-#Males - Average latency to find platform
-
-```{r echo = FALSE}
-
-wram_raw_male3 %>%
-    group_by(Day, Treatment) %>%
-  ggplot(aes(x = Day, y = mean.treatment.latency, group = Treatment, linetype = Treatment, shape = Treatment)) + ylab("Average latency to find platform (s)") + geom_point(size = 3) + geom_line(size = 1, alpha = 0.8) + theme_bw()
-#graph the average latency by treatment
-
-aov.out.M.avrlatency <- aov(avr.latency ~ Treatment * Day + Error(Animal), data = wram_raw_male2)
-summary(aov.out.M.avrlatency)
-```
