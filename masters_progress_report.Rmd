@@ -3,7 +3,7 @@ title: Understanding the Role of T cell Activity in Generating the Neurodevelopm
   Consequences Associated with Maternal Infection
 author: "Nick Fox"
 date: "Tuesday, March 03, 2015"
-output: html_document
+output: word_document
 subtitle: A Four Month Update
 ---
 ```{r echo = FALSE}
@@ -81,7 +81,7 @@ wram_raw_male3 <- wram_raw_male2 %>%
 
 ```
 # **Summary**
-The following is a 4-month update on my Masters project.  As of March 5th, 2014, I have completed Aim 1 of my proposal and am preparing to start Aim 2.
+The following is a 4-month update on my Masters project.  As of March 5th, 2015, I have completed Aim 1 of my proposal and am preparing to start Aim 2.
 
 
 ## *Research Aim 1*
@@ -125,7 +125,7 @@ For "pulse alone" trials (S), only 40ms of the 120db white noise was provided.  
 
 Percent scores for amount prepulse inhibition were calculated as %PPI = 100 * (S - PPI-S) / S.  Scores closer to 0% were considered evidence of less prepulse inhibition.
 
-#### **Results**
+### **Results**
 
 ##### Four Platform Working Memory
 The learning curve, measured by WMC errors is shown in Figure 1, and the learning curve measured by RM errors is shown in Figure 2.
@@ -278,7 +278,7 @@ aov.out.F.avrlatency <- aov(avr.latency ~ Treatment * Day + Error(Animal), data 
 
 We found a main effect of Day (F(1, 83) = 12.76, p < 0.001), and a main effect of Treatment (F(1, 83) = 6.5, P < 0.05) on the latency to find the escape platform.
 
-#### Aim 1 Conclusions
+### Aim 1 Conclusions
 After performing the 4wRAM, we decided that we had taken a few two many steps at once.  Instead of testing spatial learning and working memory and reference memory, we decided to roll back to a more simple design.  From that, we found that female offspring from mothers treated with SEA performed significantly differently at at the 1wRAM compared to offspring from saline treated mothers, measured both by how long it took them and how far they traveled before finding the escape platform.
 
 
@@ -306,25 +306,66 @@ Psychological stress will be administered starting postnatal day 28 (PN28), or o
 5. circadian cycle disruption
   + individuals are singly housed in a bright room overnight, robbing them of a dark phase that day.
 
+This stress protocol (Stress Protocol 2) is someone altered from the stressors outlined in my proposal (Stress Protocol 1) - reasons for the change are under preliminary results below.
 
 
+#### Additional Behavioral Measures
+
+##### Elevated Plus Maze
+The elevated plus maze is a four-armed maze that all radiate from a center area.  Two opposite arms have tall perimeter walls.  The other two arms are open.  The entire maze is elevated one meter off of the ground.  Animals were allowed to explore the maze for one trial of five minutes.
+
+The outcome of this test is measured as the ratio of time spent in the open arms to the time spent in the closed arms.  Ratio scores closer to zero will be evidence of anxious-like behavior.
+
+##### Open Field / Novel Object
+The open field is a 1 meter by 1 meter square maze with four large walls on the perimeter.  Animals will be allowed to explore the maze for one trial of five minutes.  After this trial, a novel object will be placed in the center of the maze.  The object used is a large, weighted metal cylinder.  After the object is in the maze, the animal is allowed to explore the maze for an additional five minutes.
+
+One outcome of this test is measured as the ratio of time spent against the perimeter to the time spent in the exposed center area.  Another outcome of interest is number of contacts with the novel object.  Fewer contacts with the novel object and a smaller
+
+### **Preliminary Results**
+
+#### Chronic Psychological Stress
+We piloted our chronic psychological stress paradigm ahead of starting Aim 2 to ensure our stressors were adequately stressful.  To test this, we tested two different stress protocols.  For each protocol, we had three conditions: "chronic stress", which received the full stress protocol, "acute stress", which was only stressed on the final day of the stress protocol, and "home cage control", which received no stress.  
 
 
+Figure 9 shows the percent body weight change of animals in each of the three stress conditions.
+<br>
+<br>
+<br>
+put in the weight change over time graph here
+<br>
+<br>
+<br>
+
+Chronically stressed animals did not gain weight over the 14 day protocol, while the acute stress and homecage control animals did.
 
 
+Figure 10 shows the ratio of time spent in the open arms to the time spent in the closed arms for animals in Stress Protocol 1.
+<br>
+<br>
+<br>
+put in the cohort 1/2 stress graph here
+<br>
+<br>
+<br>
+
+Animals administered chronic stress spent a similar amount of time in the open arms of the maze as the the home cage controls.  Acutely stressed animals spent less time in the open arms compared to either the chronicly stressed or the control animals.
+
+Figure 11 shows the percent time spent in the exposed area in the open field with and without the novel object.
+<br>
+<br>
+<br>
+put in the open field/novel object graph here
+<br>
+<br>
+<br>
+
+All three stressor groups spent more time in the center when the novel object was present, though the increase was most modest in the acute stress group.
 
 
-This is the first pass at analyzing the wRAM working memory protocol in R.
-Things to do: <br>
-Methods: <br>
-6) Elevated Plus Maze <br>
-7) Open Field / Novel Object <br>
-
-Results: <br>
-- low-grade chronic stress: body weight, EPM, OF, PPI <br>
-- severe chronic stress: body weight, EPM, OF, PPI <br>
-<br> <br>
-Future plans
+Theoretically, the 14 days of chronic stress should be a compounding insult to the animal.  Since the results of the previous experiments seemed to suggest our chronic stress animals were developing resilience to the stress condition, we altered the original stress protocol.  The experiments for Stress Protocol 2 have just been completed (elevated plus maze and open field finished the week of March 1st, 2015), and analysis is not yet complete.
 
 
+### Future Plan for Research Aim 2
+
+The schedule for the final experiment of Research Aim 2 is outlined in Appendex 1.  The experiment is a 2x2 design with maternal immune activation (MIA) and pubescent stress as the two factors.  There will be 3 litters per cell.  MIA mothers will receive treatment on day E12.5 of pregnancy.  Animals assigned to pubescent stress will start receiving stress at PN28.  Behavioral testing will begin when the offspring animals are 8 weeks old.  Experimental groups are staggered to avoid delays when running animals in the longitudinal spatial learning task.  I plan to be finished by October 4th, 2015, on schedule to defend at the departmental Masters day.
 
